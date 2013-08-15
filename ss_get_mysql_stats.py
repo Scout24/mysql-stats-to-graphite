@@ -18,7 +18,7 @@ import sys
 import time
 import traceback
 from datetime import datetime
-from socket import socket
+import socket
 
 import MySQLdb
 import MySQLdb.cursors
@@ -26,6 +26,13 @@ import MySQLdb.cursors
 mysql_user = 'statsuser'
 mysql_pass = 'statsuserpass'
 mysql_port = 3306
+
+myhostname = socket.getfqdn().split('.')[0]
+if myhostname != 'localhost':
+    functiongroup = myhostname[3:6]
+else:
+    print 'localhost is not a valid graphite metric'
+    sys.exit(1)
 
 graphite_host = '127.0.0.1'
 graphite_port = 2003
@@ -1023,7 +1030,7 @@ if __name__ == "__main__":
     sanitized_host = sanitized_host + '_' + str(args.port)
     for stat in result.split():
         var_name, val = stat.split(':')
-        output.append('mysql.%s.%s %s %d' % (sanitized_host, var_name, val, unix_ts))   
+        output.append(functiongroup + '.' + myhostname + '.%s %s %d' % (var_name, val, unix_ts))
     output = set(output)
     log_debug(['Final result', output])
     if args.use_graphite:
