@@ -1,4 +1,4 @@
-#!/usr/bin/python -w
+#!/usr/bin/env python
 # ============================================================================
 # This script is based on ss_get_mysql_stats.php 
 #  from Percona Monitoring Plugins available here:
@@ -1030,12 +1030,12 @@ if __name__ == "__main__":
     sanitized_host = sanitized_host + '_' + str(args.port)
     for stat in result.split():
         var_name, val = stat.split(':')
-        output.append(functiongroup + '.' + myhostname + '.%s %s %d' % (var_name, val, unix_ts))
+        output.append(functiongroup + '.' + myhostname + '.mysql.%s %s %d' % (var_name, val, unix_ts))
     output = set(output)
     log_debug(['Final result', output])
     if args.use_graphite:
         # Send to graphite
-        sock = socket()
+        sock = socket.socket()
         try:
             sock.connect((args.graphite_host, args.graphite_port))
         except Exception:
